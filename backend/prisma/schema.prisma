@@ -1,0 +1,232 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  SUPERADMIN
+  ADMIN
+}
+
+enum SalaryScaleStatus {
+  DETECTADA_POR_IA
+  PENDIENTE_REVISION
+  APROBADA
+  RECHAZADA
+  ARCHIVADA
+}
+
+enum ScaleSourceType {
+  FEDERATION
+  SINDICATO
+  MINISTERIO
+  BOLETIN
+  MANUAL
+  OTHER
+}
+
+enum MonitorRunStatus {
+  RUNNING
+  SUCCESS
+  FAILED
+}
+
+enum ScaleCandidateStatus {
+  DETECTED
+  EXTRACTED
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+  IGNORED
+}
+
+enum CctChangeStatus {
+  DETECTED
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model User {
+  id                      String                  @id @default(uuid())
+  name                    String
+  email                   String                  @unique
+  passwordHash            String
+  role                    UserRole                @default(ADMIN)
+  createdAt               DateTime                @default(now())
+  scaleCandidatesReviewed SalaryScaleCandidate[]
+  cctCandidatesReviewed   CctNormativeCandidate[]
+  auditLogs               AuditLog[]
+}
+
+model AuditLog {
+  id                String   @id @default(uuid())
+  userId            String?
+  entity            String
+  entityId          String
+  action            String
+  previousValueJson Json?
+  newValueJson      Json?
+  createdAt         DateTime @default(now())
+  user              User?    @relation(fields: [userId], references: [id])
+}
+
+model SalaryScaleSource {
+  id             String                  @id @default(uuid())
+  conventionId   String
+  calculatorKey  String
+  name           String
+  url            String
+  sourceType     ScaleSourceType         @default(OTHER)
+  enabled        Boolean                 @default(true)
+  checkFrequency Int                     @default(24)
+  monitorSince   DateTime?
+  lastCheckedAt  DateTime?
+  lastSuccessAt  DateTime?
+  lastError      String?
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
+  monitorRuns    SalaryScaleMonitorRun[]
+  candidates     SalaryScaleCandidate[]
+
+  @@index([calculatorKey])
+  @@index([enabled])
+}
+
+model SalaryScaleMonitorRun {
+  id                  String            @id @default(uuid())
+  sourceId            String
+  status              MonitorRunStatus  @default(RUNNING)
+  checkedAt           DateTime          @default(now())
+  foundDocumentsCount Int               @default(0)
+  errorMessage        String?
+  rawResultJson       Json              @default("{}")
+  createdAt           DateTime          @default(now())
+  source              SalaryScaleSource @relation(fields: [sourceId], references: [id])
+
+  @@index([sourceId, createdAt])
+}
+
+model SalaryScaleCandidate {
+  id                String               @id @default(uuid())
+  conventionId      String
+  calculatorKey     String
+  sourceId          String?
+  sourceName        String
+  sourceUrl         String?
+  documentUrl       String?
+  fileName          String?
+  fileHash          String?
+  periodMonth       Int?
+  periodYear        Int?
+  title             String?
+  status            ScaleCandidateStatus @default(DETECTED)
+  aiConfidence      Int                  @default(0)
+  extractedText     String?
+  extractedDataJson Json                 @default("{}")
+  diffJson          Json                 @default("{}")
+  previousVersionId String?
+  createdAt         DateTime             @default(now())
+  reviewedById      String?
+  reviewedAt        DateTime?
+  reviewNotes       String?
+  source            SalaryScaleSource?   @relation(fields: [sourceId], references: [id])
+  reviewedBy        User?                @relation(fields: [reviewedById], references: [id])
+
+  @@index([calculatorKey, status])
+  @@index([fileHash])
+  @@index([status, createdAt])
+}
+
+model SalaryScaleVersion {
+  id                String            @id @default(uuid())
+  conventionId      String
+  calculatorKey     String
+  conventionName    String
+  cct               String?
+  periodMonth       Int
+  periodYear        Int
+  validFrom         DateTime
+  validTo           DateTime?
+  status            SalaryScaleStatus @default(PENDIENTE_REVISION)
+  sourceLabel       String
+  sourceUrl         String?
+  sourceFileName    String?
+  rawText           String?
+  extractedByIAJson Json              @default("{}")
+  confidenceScore   Int               @default(0)
+  createdById       String
+  reviewedById      String?
+  reviewedAt        DateTime?
+  reviewNote        String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  items             SalaryScaleItem[]
+
+  @@index([calculatorKey, periodYear, periodMonth, status])
+  @@index([status, createdAt])
+}
+
+model SalaryScaleItem {
+  id                    String             @id @default(uuid())
+  salaryScaleVersionId  String
+  categoryKey           String?
+  categoryName          String
+  baseSalary            Decimal?           @db.Decimal(14, 2)
+  hourlyWage            Decimal?           @db.Decimal(14, 2)
+  nonRemunerativeAmount Decimal?           @db.Decimal(14, 2)
+  additionalJson        Json               @default("{}")
+  createdAt             DateTime           @default(now())
+  salaryScaleVersion    SalaryScaleVersion @relation(fields: [salaryScaleVersionId], references: [id], onDelete: Cascade)
+
+  @@index([categoryKey])
+}
+
+model CctNormativeSource {
+  id            String                  @id @default(uuid())
+  conventionId  String
+  calculatorKey String
+  name          String
+  url           String
+  enabled       Boolean                 @default(true)
+  lastCheckedAt DateTime?
+  createdAt     DateTime                @default(now())
+  updatedAt     DateTime                @updatedAt
+  candidates    CctNormativeCandidate[]
+
+  @@index([calculatorKey])
+}
+
+model CctNormativeCandidate {
+  id            String              @id @default(uuid())
+  conventionId  String
+  calculatorKey String
+  sourceId      String?
+  title         String
+  documentUrl   String?
+  fileHash      String?
+  status        CctChangeStatus     @default(DETECTED)
+  extractedText String?
+  summaryJson   Json                @default("{}")
+  diffJson      Json                @default("{}")
+  riskLevel     RiskLevel           @default(LOW)
+  aiConfidence  Int                 @default(0)
+  createdAt     DateTime            @default(now())
+  reviewedById  String?
+  reviewedAt    DateTime?
+  source        CctNormativeSource? @relation(fields: [sourceId], references: [id])
+  reviewedBy    User?               @relation(fields: [reviewedById], references: [id])
+
+  @@index([calculatorKey, status])
+  @@index([status, createdAt])
+}
