@@ -24,7 +24,7 @@ import { AuthService } from '../core/auth.service';
         <a routerLink="/app/fuentes" routerLinkActive="active">Sitios monitoreados</a>
         <a routerLink="/app/detectadas" routerLinkActive="active">Escalas para revisar</a>
         <a routerLink="/app/aprobadas" routerLinkActive="active">Escalas aprobadas</a>
-        <a routerLink="/app/normativa" routerLinkActive="active">Cambios de convenio</a>
+        <a routerLink="/app/normativa" routerLinkActive="active">Cambios de convenios</a>
       </nav>
 
       <main class="shell-main">
