@@ -1,0 +1,260 @@
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 2rem;
+  color: #2d3748;
+}
+
+.refreshBtn {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.refreshBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.refreshBtn:disabled {
+  opacity: 0.7;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.pagination button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pagination button:not(:disabled):hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Modal */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal {
+  background: white;
+  border-radius: 12px;
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem;
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  background: white;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  color: #2d3748;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #718096;
+  transition: color 0.3s;
+}
+
+.closeBtn:hover {
+  color: #2d3748;
+}
+
+.modalContent {
+  padding: 2rem;
+}
+
+.section {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.section:last-child {
+  border-bottom: none;
+}
+
+.section h3 {
+  margin: 0 0 1rem 0;
+  color: #2d3748;
+}
+
+.section p {
+  margin: 0.5rem 0;
+  color: #4a5568;
+}
+
+.section a {
+  color: #667eea;
+  text-decoration: none;
+}
+
+.section a:hover {
+  text-decoration: underline;
+}
+
+.categoriesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.categoryCard {
+  background: #f7fafc;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+}
+
+.categoryCard h4 {
+  margin: 0 0 1rem 0;
+  color: #2d3748;
+}
+
+.categoryCard p {
+  margin: 0.5rem 0;
+  color: #4a5568;
+  font-size: 0.9rem;
+}
+
+.diffTable {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.diffRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: #f7fafc;
+  border-radius: 6px;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.diffRow strong {
+  flex: 1;
+  min-width: 150px;
+}
+
+.positive {
+  color: #22863a;
+  font-weight: 600;
+}
+
+.negative {
+  color: #cb2431;
+  font-weight: 600;
+}
+
+.modalFooter {
+  display: flex;
+  gap: 1rem;
+  padding: 2rem;
+  border-top: 1px solid #e2e8f0;
+  background: #f7fafc;
+  position: sticky;
+  bottom: 0;
+}
+
+.modalFooter button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.cancelBtn {
+  flex: 1;
+  background: #e2e8f0;
+  color: #2d3748;
+}
+
+.cancelBtn:hover {
+  background: #cbd5e0;
+}
+
+.rejectBtn {
+  flex: 1;
+  background: #fff5f5;
+  color: #c53030;
+  border: 1px solid #fc8181;
+}
+
+.rejectBtn:hover {
+  background: #fed7d7;
+}
+
+.approveBtn {
+  flex: 1;
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  color: white;
+}
+
+.approveBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
+}
